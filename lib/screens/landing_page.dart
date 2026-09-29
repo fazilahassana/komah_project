@@ -3,7 +3,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_spacing.dart';
 import '../widgets/gradient_button.dart';
-import 'login_page.dart';
+import '../routes/app_routes.dart';
 
 /// Landing Page KOMAH — Frame 1 Figma.
 class LandingPage extends StatelessWidget {
@@ -135,12 +135,7 @@ class LandingPage extends StatelessWidget {
                   text: 'Lanjutkan',
                   textStyle: AppTextStyles.buttonTextLanding,
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginPage(),
-                      ),
-                    );
+                    Navigator.pushNamed(context, AppRoutes.login);
                   },
                 ),
               ),
@@ -151,12 +146,7 @@ class LandingPage extends StatelessWidget {
               Center(
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginPage(),
-                      ),
-                    );
+                    Navigator.pushNamed(context, AppRoutes.login);
                   },
                   child: RichText(
                     text: TextSpan(
