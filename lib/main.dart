@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'routes/app_routes.dart';
 import 'theme/app_colors.dart';
 import 'screens/landing_page.dart';
 
@@ -25,6 +26,8 @@ class KomahApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const LandingPage(),
+      onGenerateRoute: AppRoutes.onGenerateRoute,
+      onUnknownRoute: AppRoutes.onUnknownRoute,
     );
   }
 }
