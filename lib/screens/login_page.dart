@@ -4,6 +4,8 @@ import '../theme/app_text_styles.dart';
 import '../theme/app_spacing.dart';
 import '../widgets/gradient_button.dart';
 import '../widgets/custom_text_field.dart';
+import '../utils/validators.dart';
+import '../routes/app_routes.dart';
 
 /// Login Page KOMAH — Frame 2 Figma.
 class LoginPage extends StatefulWidget {
@@ -27,16 +29,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _handleLogin() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Validasi berhasil. Login belum terhubung ke backend.',
-          ),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) return;
+
+    // Isian benar -> pindah ke Home, Login dibuang dari stack
+    Navigator.pushReplacementNamed(context, AppRoutes.home);
   }
 
   void _handleForgotPassword() {
@@ -65,6 +62,7 @@ class _LoginPageState extends State<LoginPage> {
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -88,9 +86,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 // ── Judul ──
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 33,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 33),
                   child: Text(
                     'Masuk ke akun kamu',
                     style: AppTextStyles.pageTitle,
@@ -101,9 +97,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 // ── Deskripsi ──
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 33,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 33),
                   child: Text(
                     'Pakai nomor HP atau email yang kamu daftarkan',
                     style: AppTextStyles.pageSubtitle,
@@ -133,10 +127,16 @@ class _LoginPageState extends State<LoginPage> {
                     borderColor: AppColors.inputBorder,
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Nomor HP atau email tidak boleh kosong';
-                      }
-                      return null;
+                      final required = Validators.requiredField(
+                        value,
+                        fieldName: 'Nomor HP atau email',
+                      );
+                      if (required != null) return required;
+
+                      final text = value!.trim();
+                      final isPhone = RegExp(r'^\+?\d{9,15}$').hasMatch(text);
+                      if (isPhone) return null;
+                      return Validators.email(text);
                     },
                   ),
                 ),
@@ -176,12 +176,7 @@ class _LoginPageState extends State<LoginPage> {
                         size: 22,
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Kata sandi tidak boleh kosong';
-                      }
-                      return null;
-                    },
+                    validator: Validators.password,
                   ),
                 ),
 
