@@ -4,7 +4,8 @@ import '../theme/app_text_styles.dart';
 import '../theme/app_spacing.dart';
 import '../widgets/gradient_button.dart';
 import '../widgets/custom_text_field.dart';
-
+import '../utils/validators.dart'; // Menambahkan import validators
+import '../routes/app_routes.dart';
 /// Login Page KOMAH — Frame 2 Figma.
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -26,17 +27,12 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _handleLogin() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Validasi berhasil. Login belum terhubung ke backend.',
-          ),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
+  // (3) dijalankan saat tombol Masuk ditekan
+  void _submit() {
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) return; // ada isian yang salah -> berhenti
+
+    Navigator.pushReplacementNamed(context, AppRoutes.home);
   }
 
   void _handleForgotPassword() {
@@ -63,8 +59,10 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
+          // (4) bungkus field dengan Form (sudah ada), tambahkan autovalidateMode
           child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -132,12 +130,8 @@ class _LoginPageState extends State<LoginPage> {
                     backgroundColor: AppColors.inputBackground,
                     borderColor: AppColors.inputBorder,
                     keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Nomor HP atau email tidak boleh kosong';
-                      }
-                      return null;
-                    },
+                    // (5) validator dari utils
+                    validator: Validators.email,
                   ),
                 ),
 
@@ -176,12 +170,8 @@ class _LoginPageState extends State<LoginPage> {
                         size: 22,
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Kata sandi tidak boleh kosong';
-                      }
-                      return null;
-                    },
+                    // (5) validator dari utils
+                    validator: Validators.password,
                   ),
                 ),
 
@@ -212,7 +202,8 @@ class _LoginPageState extends State<LoginPage> {
                   child: GradientButton(
                     text: 'Masuk',
                     textStyle: AppTextStyles.buttonTextLogin,
-                    onPressed: _handleLogin,
+                    // (6) tombol memanggil _submit
+                    onPressed: _submit,
                   ),
                 ),
 
