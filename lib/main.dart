@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'routes/app_routes.dart';
 import 'theme/app_colors.dart';
-import 'screens/landing_page.dart';
 
 void main() {
   runApp(const KomahApp());
