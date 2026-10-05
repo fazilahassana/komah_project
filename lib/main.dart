@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'routes/app_routes.dart';
+import 'screens/payment_proof_flow.dart';
 import 'theme/app_colors.dart';
 
 void main() {
@@ -24,7 +25,7 @@ class KomahApp extends StatelessWidget {
         scaffoldBackgroundColor: AppColors.background,
         useMaterial3: true,
       ),
-      home: const LandingPage(),
+      home: const PaymentProofFlow(),
       onGenerateRoute: AppRoutes.onGenerateRoute,
       onUnknownRoute: AppRoutes.onUnknownRoute,
     );
