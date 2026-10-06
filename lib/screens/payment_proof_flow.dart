@@ -1,8 +1,11 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:gal/gal.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-
-import 'camera_screen.dart';
 
 class PaymentProofFlow extends StatefulWidget {
   const PaymentProofFlow({super.key});
@@ -17,6 +20,8 @@ class _PaymentProofFlowState extends State<PaymentProofFlow> {
   String? _paymentMethod;
 
   bool _paymentSuccess = false;
+
+  Uint8List? _paymentProofBytes;
 
   static const _cream = Color(0xFFFFF8F3);
   static const _navy = Color(0xFF1E2A5A);
@@ -41,6 +46,78 @@ class _PaymentProofFlowState extends State<PaymentProofFlow> {
   ];
 
   static const _qrisData = 'KOMAH|PAYMENT|KMH-061026-2841|12000';
+
+  Future<void> _saveQrisToGallery() async {
+  try {
+    final painter = QrPainter(
+      data: _qrisData,
+      version: QrVersions.auto,
+      gapless: false,
+    );
+
+    final ByteData? byteData = await painter.toImageData(
+      1000,
+      format: ui.ImageByteFormat.png,
+    );
+
+    if (byteData == null) {
+      throw Exception('QRIS gagal dibuat');
+    }
+
+    final Uint8List bytes = byteData.buffer.asUint8List();
+
+    await Gal.putImageBytes(
+      bytes,
+      name: 'QRIS_KOMAH',
+    );
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('QRIS berhasil disimpan ke galeri'),
+      ),
+    );
+  } catch (e) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('QRIS gagal disimpan ke galeri'),
+      ),
+    );
+  }
+}
+
+  Future<void> _pickPaymentProof() async {
+  try {
+    final picker = ImagePicker();
+
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
+
+    if (image == null) {
+      return;
+    }
+
+    final bytes = await image.readAsBytes();
+
+    if (!mounted) return;
+
+    setState(() {
+      _paymentProofBytes = bytes;
+    });
+  } catch (e) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Gagal memilih bukti pembayaran'),
+      ),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -380,54 +457,154 @@ class _PaymentProofFlowState extends State<PaymentProofFlow> {
               const SizedBox(height: 18),
 
               SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: OutlinedButton.icon(
-                  onPressed: _scanQr,
-                  icon: const Icon(Icons.qr_code_scanner_rounded, size: 19),
-                  label: Text(
-                    'Scan QR',
-                    style: _font(
-                      size: 13,
-                      weight: FontWeight.w800,
-                      color: _navy,
-                    ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: _navy,
-                    side: const BorderSide(color: _navy),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(13),
-                    ),
-                  ),
-                ),
-              ),
+  width: double.infinity,
+  height: 48,
+  child: OutlinedButton.icon(
+    onPressed: _saveQrisToGallery,
+    icon: const Icon(
+      Icons.download_rounded,
+      size: 19,
+    ),
+    label: Text(
+      'Simpan QRIS ke Galeri',
+      style: _font(
+        size: 13,
+        weight: FontWeight.w800,
+        color: _navy,
+      ),
+    ),
+    style: OutlinedButton.styleFrom(
+      foregroundColor: _navy,
+      side: BorderSide(
+        color: _navy.withValues(alpha: 0.25),
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    ),
+  ),
+),
 
               const SizedBox(height: 10),
 
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: _markQrisAsPaid,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _orange,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(13),
-                    ),
-                  ),
-                  child: Text(
-                    'Saya Sudah Bayar',
-                    style: _font(
-                      size: 13,
-                      weight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+            SizedBox(
+  width: double.infinity,
+  height: 48,
+  child: ElevatedButton(
+    onPressed: _pickPaymentProof,
+    style: ElevatedButton.styleFrom(
+      backgroundColor: _navy,
+      foregroundColor: Colors.white,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(13),
+      ),
+    ),
+    child: Text(
+      'Upload Bukti Pembayaran',
+      style: _font(
+        size: 13,
+        weight: FontWeight.w800,
+        color: Colors.white,
+      ),
+    ),
+  ),
+),
+if (_paymentProofBytes != null) ...[
+  const SizedBox(height: 16),
+
+  Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(13),
+      border: Border.all(
+        color: _navy.withValues(alpha: 0.12),
+      ),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Preview Bukti Pembayaran',
+          style: _font(
+            size: 13,
+            weight: FontWeight.w800,
+            color: _navy,
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.memory(
+            _paymentProofBytes!,
+            width: double.infinity,
+            fit: BoxFit.contain,
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        SizedBox(
+          width: double.infinity,
+          height: 44,
+          child: OutlinedButton(
+            onPressed: _pickPaymentProof,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: _navy,
+              side: BorderSide(
+                color: _navy.withValues(alpha: 0.25),
               ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              'Ganti Bukti',
+              style: _font(
+                size: 12,
+                weight: FontWeight.w800,
+                color: _navy,
+              ),
+            ),
+          ),
+        ),
+                const SizedBox(height: 10),
+
+        SizedBox(
+          width: double.infinity,
+          height: 44,
+          child: ElevatedButton(
+           onPressed: () {
+              setState(() {
+                _paymentSuccess = true;
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _navy,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              'Konfirmasi Bukti',
+              style: _font(
+                size: 12,
+                weight: FontWeight.w800,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  ),
+],
             ],
           ),
         ),
@@ -539,89 +716,71 @@ class _PaymentProofFlowState extends State<PaymentProofFlow> {
   // SCAN QR
   // ============================================================
 
-  Future<void> _scanQr() async {
-    final result = await Navigator.of(context)
-        .push<String>(MaterialPageRoute(builder: (_) => const CameraScreen()));
-
-    if (!mounted || result == null) {
-      return;
-    }
-
-    if (result == _qrisData) {
-      _markQrisAsPaid();
-      return;
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('QR Code tidak sesuai dengan pembayaran KOMah.'),
-      ),
-    );
-  }
+ 
 
   // ============================================================
   // QRIS PAYMENT SUCCESS
   // ============================================================
 
-  void _markQrisAsPaid() {
-    setState(() {
-      _paymentSuccess = true;
-    });
-  }
 
-  Widget _successPaymentBox() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE8F7EF),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFBCE7CF)),
+ Widget _successPaymentBox() {
+  return Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(
+      color: const Color(0xFFE8F7EF),
+      borderRadius: BorderRadius.circular(14),
+      border: Border.all(
+        color: const Color(0xFFBCE7CF),
       ),
-      child: Row(
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: const BoxDecoration(
-              color: _green,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.check_rounded,
-              color: Colors.white,
-              size: 23,
-            ),
+    ),
+    child: Row(
+      children: [
+        Container(
+          width: 38,
+          height: 38,
+          decoration: const BoxDecoration(
+            color: _green,
+            shape: BoxShape.circle,
           ),
-
-          const SizedBox(width: 11),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Pembayaran Berhasil',
-                  style: _font(
-                    size: 13,
-                    weight: FontWeight.w800,
-                    color: _green,
-                  ),
-                ),
-
-                const SizedBox(height: 3),
-
-                Text(
-                  'Pembayaran QRIS telah dikonfirmasi.',
-                  style: _font(size: 10.5, color: _body),
-                ),
-              ],
-            ),
+          child: const Icon(
+            Icons.check_rounded,
+            color: Colors.white,
+            size: 23,
           ),
-        ],
-      ),
-    );
-  }
+        ),
+
+        const SizedBox(width: 11),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Bukti pembayaran berhasil diunggah',
+                style: _font(
+                  size: 13,
+                  weight: FontWeight.w800,
+                  color: _green,
+                ),
+              ),
+
+              const SizedBox(height: 3),
+
+              Text(
+                'Bukti pembayaran sedang menunggu verifikasi.',
+                style: _font(
+                  size: 10.5,
+                  color: _body,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
   // ============================================================
   // STEP 3 - CONFIRMATION
@@ -804,8 +963,8 @@ class _PaymentProofFlowState extends State<PaymentProofFlow> {
           )
         else
           _infoBox(
-            'Pembayaran QRIS telah berhasil '
-            'dan tidak memerlukan upload bukti pembayaran.',
+            'Bukti pembayaran berhasil diunggah. '
+            'Bukti sedang menunggu verifikasi.',
           ),
       ],
     );
@@ -918,8 +1077,7 @@ class _PaymentProofFlowState extends State<PaymentProofFlow> {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        _paymentSuccess ? 'Pembayaran Berhasil' : 'Menunggu Pembayaran',
-        style: _font(
+        _paymentSuccess ? 'Menunggu Verifikasi' : 'Menunggu Pembayaran',        style: _font(
           size: 9.5,
           weight: FontWeight.w700,
           color: _paymentSuccess ? _green : _orange,
