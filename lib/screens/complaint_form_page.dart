@@ -19,12 +19,13 @@ class _ComplaintFormPageState extends State<ComplaintFormPage> {
   final _descriptionController = TextEditingController();
 
   String? _selectedCategory;
+  bool _isSubmitting = false;
 
   bool get _hasStartedForm =>
       _selectedCategory != null ||
       _descriptionController.text.trim().isNotEmpty;
 
-  int get _currentStep => _hasStartedForm ? 2 : 1;
+  int get _currentStep => _isSubmitting ? 3 : (_hasStartedForm ? 2 : 1);
 
   @override
   void dispose() {
@@ -32,11 +33,27 @@ class _ComplaintFormPageState extends State<ComplaintFormPage> {
     super.dispose();
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
+    if (_isSubmitting) return;
+
     final isValid = _formKey.currentState?.validate() ?? false;
     if (!isValid) return;
 
-    // Submission is intentionally deferred to the next implementation phase.
+    setState(() => _isSubmitting = true);
+
+    try {
+      await Future<void>.delayed(const Duration(seconds: 2));
+      if (!mounted) return;
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memproses komplain: $error')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
   }
 
   void _showNotReadyMessage(String feature) {
@@ -59,38 +76,9 @@ class _ComplaintFormPageState extends State<ComplaintFormPage> {
               _buildHeader(context),
               Transform.translate(
                 offset: const Offset(0, -20),
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(20, 22, 20, 28),
-                  decoration: const BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(24),
-                    ),
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _buildOrderSummary(),
-                        const SizedBox(height: 22),
-                        _buildFieldLabel('Kategori Komplain', required: true),
-                        const SizedBox(height: 8),
-                        _buildCategoryField(),
-                        const SizedBox(height: 18),
-                        _buildFieldLabel('Deskripsi Komplain', required: true),
-                        const SizedBox(height: 8),
-                        _buildDescriptionField(),
-                        const SizedBox(height: 18),
-                        _buildFieldLabel('Bukti Foto', optional: true),
-                        const SizedBox(height: 8),
-                        _buildPhotoPlaceholder(),
-                        const SizedBox(height: 22),
-                        _buildSubmitButton(),
-                      ],
-                    ),
-                  ),
-                ),
+                child: _isSubmitting
+                    ? _buildSubmittingContent()
+                    : _buildFormContent(),
               ),
             ],
           ),
@@ -141,16 +129,104 @@ class _ComplaintFormPageState extends State<ComplaintFormPage> {
           ),
           const SizedBox(height: 18),
           Text(
-            'Ajukan Komplain',
+            _isSubmitting ? 'Mengirim Komplain' : 'Ajukan Komplain',
             style: Theme.of(context).textTheme.headlineSmall
                 ?.copyWith(color: AppColors.white, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 6),
           Text(
-            'Sampaikan kendala yang kamu alami pada pesanan ini.',
+            _isSubmitting
+                ? 'Mohon tunggu sebentar, komplain kamu sedang kami kirim.'
+                : 'Sampaikan kendala yang kamu alami pada pesanan ini.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.white.withValues(alpha: 0.86),
               height: 1.45,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFormContent() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 28),
+      decoration: const BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildOrderSummary(),
+            const SizedBox(height: 22),
+            _buildFieldLabel('Kategori Komplain', required: true),
+            const SizedBox(height: 8),
+            _buildCategoryField(),
+            const SizedBox(height: 18),
+            _buildFieldLabel('Deskripsi Komplain', required: true),
+            const SizedBox(height: 8),
+            _buildDescriptionField(),
+            const SizedBox(height: 18),
+            _buildFieldLabel('Bukti Foto', optional: true),
+            const SizedBox(height: 8),
+            _buildPhotoPlaceholder(),
+            const SizedBox(height: 22),
+            _buildSubmitButton(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubmittingContent() {
+    return Container(
+      constraints: const BoxConstraints(minHeight: 430),
+      padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
+      decoration: const BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 46),
+          const SizedBox(
+            width: 58,
+            height: 58,
+            child: CircularProgressIndicator(
+              strokeWidth: 4,
+              color: AppColors.primaryGradientStart,
+              backgroundColor: Color(0xFFFFE7DD),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Mengirim Komplain...',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: AppColors.brandPurple,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Data komplain kamu sedang diproses. Mohon tunggu sebentar.',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: const Color(0xFF85818A), height: 1.5),
+          ),
+          const SizedBox(height: 42),
+          const Divider(color: Color(0xFFECE8E5)),
+          const SizedBox(height: 12),
+          _buildOrderSummary(),
+          const SizedBox(height: 18),
+          SizedBox(
+            height: 52,
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: null,
+              child: const Text('Mengirim Komplain...'),
             ),
           ),
         ],
