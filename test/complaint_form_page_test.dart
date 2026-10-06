@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:komah_project/models/complaint_order_summary.dart';
 import 'package:komah_project/screens/complaint_form_page.dart';
+import 'package:komah_project/screens/complaint_status_page.dart';
 
 void main() {
   const order = ComplaintOrderSummary(
@@ -70,9 +71,10 @@ void main() {
 
     await tester.tap(find.byType(DropdownButtonFormField<String>));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Driver').last);
+    await tester.tap(find.text('Pembayaran').last);
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField), 'Kendala pada pesanan.');
+    const description = 'Pembayaran QRIS terdebit dua kali.';
+    await tester.enterText(find.byType(TextFormField), description);
     await tester.ensureVisible(find.text('Kirim Komplain'));
     await tester.tap(find.text('Kirim Komplain'));
     await tester.pump();
@@ -97,10 +99,47 @@ void main() {
     );
 
     await tester.pump(const Duration(seconds: 2));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('Mengirim Komplain...'), findsNothing);
-    expect(find.text('Komplain Berhasil Dikirim'), findsNothing);
-    expect(find.text('2 dari 4'), findsOneWidget);
+    expect(find.text('Komplain Berhasil Dikirim'), findsOneWidget);
+    expect(find.text('4 dari 4'), findsOneWidget);
+    expect(find.text('#KP240625001'), findsOneWidget);
+    expect(find.textContaining('#KM240625001'), findsOneWidget);
+    expect(find.text('Pembayaran'), findsOneWidget);
+    expect(find.text(description), findsOneWidget);
+    expect(find.text('Diajukan'), findsOneWidget);
+    expect(find.text('Tidak ada foto bukti'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Lihat Status Komplain'));
+    await tester.tap(find.text('Lihat Status Komplain'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ComplaintStatusPage), findsOneWidget);
+    expect(find.text('Diajukan'), findsOneWidget);
+    expect(find.text('Pembayaran'), findsOneWidget);
+    expect(find.textContaining('#KM240625001'), findsOneWidget);
+  });
+
+  testWidgets('success page returns to the existing landing page', (
+    tester,
+  ) async {
+    await pumpComplaintForm(tester);
+
+    await tester.tap(find.byType(DropdownButtonFormField<String>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Driver').last);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField), 'Kendala pada pesanan.');
+    await tester.ensureVisible(find.text('Kirim Komplain'));
+    await tester.tap(find.text('Kirim Komplain'));
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Kembali ke Beranda'));
+    await tester.tap(find.text('Kembali ke Beranda'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Lanjutkan'), findsOneWidget);
   });
 }

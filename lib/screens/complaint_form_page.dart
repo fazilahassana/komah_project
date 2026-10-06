@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../models/complaint_order_summary.dart';
+import '../models/complaint_submission_result.dart';
 import '../theme/app_colors.dart';
+import 'complaint_success_page.dart';
 
 class ComplaintFormPage extends StatefulWidget {
   final ComplaintOrderSummary order;
@@ -41,19 +45,42 @@ class _ComplaintFormPageState extends State<ComplaintFormPage> {
 
     setState(() => _isSubmitting = true);
 
+    ComplaintSubmissionResult? result;
     try {
       await Future<void>.delayed(const Duration(seconds: 2));
       if (!mounted) return;
+      result = ComplaintSubmissionResult(
+        complaintNumber: '#KP240625001',
+        order: widget.order,
+        category: _selectedCategory!,
+        description: _descriptionController.text.trim(),
+        status: 'Diajukan',
+      );
     } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal memproses komplain: $error')),
+        const SnackBar(
+          content: Text('Komplain gagal dikirim. Silakan coba kembali.'),
+        ),
       );
     } finally {
       if (mounted) {
         setState(() => _isSubmitting = false);
       }
     }
+
+    final submittedComplaint = result;
+    if (!mounted || submittedComplaint == null) return;
+
+    unawaited(
+      Navigator.pushReplacement<void, void>(
+        context,
+        MaterialPageRoute<void>(
+          builder: (_) =>
+              ComplaintSuccessPage(complaint: submittedComplaint),
+        ),
+      ),
+    );
   }
 
   void _showNotReadyMessage(String feature) {
