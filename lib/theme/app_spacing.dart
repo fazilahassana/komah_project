@@ -21,4 +21,8 @@ class AppSpacing {
   static const double inputHeight = 60.0;
   static const double inputRadius = 15.0;
   static const double inputBorderWidth = 3.0;
+
+  // Tombol Alamat Favorit
+  static const double kmButtonHeight = 52.0;
+  static const double kmButtonRadius = 16.0;
 }

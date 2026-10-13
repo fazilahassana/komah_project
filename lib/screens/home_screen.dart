@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ViewStatus _status = ViewStatus.loading;
   List<Item> _items = [];
   String _errorMessage = '';
-  bool _simulateError = false; // ubah ke true untuk menguji error state
+  final bool _simulateError = false;// ubah ke true untuk menguji error state
 
   @override
   void initState() {
@@ -49,16 +49,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          // TEMPORARY: hapus setelah uji 404
-          IconButton(
-            icon: const Icon(Icons.bug_report),
-            onPressed: () => Navigator.pushNamed(context, '/tidak-ada'),
-          ),
-        ],
+      
+  appBar: AppBar(
+    title: const Text('Home'),
+    actions: [
+      IconButton(
+        tooltip: 'Alamat Favorit',
+        icon: const Icon(Icons.location_on_outlined),
+        onPressed: () {
+          Navigator.of(context).pushNamed(AppRoutes.alamat);
+        },
       ),
+    ],
+  ),
+
       body: _buildContent(),
     );
   }

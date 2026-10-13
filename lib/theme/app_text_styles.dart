@@ -89,4 +89,38 @@ class AppTextStyles {
     height: 21 / 14,
     color: AppColors.accent,
   );
+
+    // ── KOMah: Alamat Favorit (Plus Jakarta Sans) ──
+  static TextStyle kmTitle = GoogleFonts.plusJakartaSans(
+    fontWeight: FontWeight.w800,
+    fontSize: 26,
+    color: AppColors.kmNavy,
+  );
+
+  static TextStyle kmBody = GoogleFonts.plusJakartaSans(
+    fontWeight: FontWeight.w400,
+    fontSize: 13,
+    height: 1.4,
+    color: AppColors.kmGrey,
+  );
+
+  static TextStyle kmButton = GoogleFonts.plusJakartaSans(
+    fontWeight: FontWeight.w700,
+    fontSize: 16,
+    color: AppColors.white,
+  );
+
+  /// Helper gaya teks serbaya untuk layar Alamat Favorit.
+  static TextStyle km({
+    double size = 14,
+    FontWeight weight = FontWeight.w400,
+    Color color = AppColors.kmNavy,
+    double? height,
+  }) =>
+      GoogleFonts.plusJakartaSans(
+        fontSize: size,
+        fontWeight: weight,
+        color: color,
+        height: height,
+      );
 }

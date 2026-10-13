@@ -4,6 +4,14 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
+  // ── KOMah: Alamat Favorit ──
+  static const Color kmCoral = Color(0xFFFF6B35);
+  static const Color kmOrange = Color(0xFFFF9F5A);
+  static const Color kmNavy = Color(0xFF2A2A6B);
+  static const Color kmGrey = Color(0xFF8A8FA3);
+  static const Color kmLavender = Color(0xFFE9E6F8);
+  static const Color kmLavenderText = Color(0xFF5B4FC4);
+  static const Color kmCream = Color(0xFFFFF5EE);
   // Base
   static const Color background = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000);
