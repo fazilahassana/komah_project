@@ -4,6 +4,7 @@ import '../theme/app_text_styles.dart';
 import '../theme/app_spacing.dart';
 import '../widgets/gradient_button.dart';
 import '../widgets/custom_text_field.dart';
+import '../routes/app_routes.dart';
 
 /// Login Page KOMAH — Frame 2 Figma.
 class LoginPage extends StatefulWidget {
@@ -26,15 +27,16 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+    // [INPUT/EVENT] Tombol "Masuk".
   void _handleLogin() {
+    // [VALIDATION] Email/HP dan kata sandi tidak boleh kosong.
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Validasi berhasil. Login belum terhubung ke backend.',
-          ),
-          behavior: SnackBarBehavior.floating,
-        ),
+      // [NAVIGATION] Hapus Landing + Login dari tumpukan halaman,
+      // sehingga tombol back di Beranda tidak kembali ke Login.
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.home,
+        (route) => false,
       );
     }
   }

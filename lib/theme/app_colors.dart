@@ -17,6 +17,15 @@ class AppColors {
   static const Color primaryGradientMiddle = Color(0xFFFF8E54);
   static const Color primaryGradientEnd = Color(0xFFFEB04E);
 
+  // ── KOMah Practical Challenge ──
+  static const Color primary = Color(0xFFFF6433);       // oranye solid (ikon, stepper)
+  static const Color textPrimary = Color(0xFF1E1B4B);   // judul & nilai (navy)
+  static const Color textSecondary = Color(0xFF6B7280); // subjudul & label
+  static const Color softPurple = Color(0xFFF1EFFC);    // kotak info & kartu nomor pesanan
+  static const Color softOrange = Color(0xFFFFF1E8);    // latar ikon/ilustrasi
+  static const Color cardBorder = Color(0xFFE8E6F3);    // border kartu & field
+  static const Color error = Color(0xFFD93025);         // pesan validasi
+  
   // Button shadow
   static const Color buttonShadow = Color(0xFFFF7F57);
 

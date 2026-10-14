@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'routes/app_routes.dart';
 import 'theme/app_colors.dart';
-import 'screens/landing_page.dart';
 
 void main() {
   runApp(const KomahApp());
@@ -13,18 +14,21 @@ class KomahApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'KOMAH',
+      title: 'KOMah',
       debugShowCheckedModeBanner: false,
+      // Material 3 dengan warna utama oranye KOMah.
       theme: ThemeData(
+        useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.brandPurple,
+          seedColor: AppColors.primary,
           surface: AppColors.background,
         ),
-        textTheme: GoogleFonts.poppinsTextTheme(),
+        textTheme: GoogleFonts.plusJakartaSansTextTheme(),
         scaffoldBackgroundColor: AppColors.background,
-        useMaterial3: true,
       ),
-      home: const LandingPage(),
+      // [NAVIGATION] Semua perpindahan layar memakai named route.
+      initialRoute: AppRoutes.landing,
+      onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }
 }

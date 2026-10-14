@@ -17,6 +17,9 @@ class CustomTextField extends StatelessWidget {
     this.borderColor,
     this.keyboardType,
     this.validator,
+    this.maxLines = 1,
+    this.readOnly = false,
+    this.borderWidth = AppSpacing.inputBorderWidth,
   });
 
   final TextEditingController controller;
@@ -28,6 +31,10 @@ class CustomTextField extends StatelessWidget {
   final Color? borderColor;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
+  final int maxLines;
+  final bool readOnly;
+  final double borderWidth;
+
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +43,8 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
+       maxLines: maxLines,
+      readOnly: readOnly,
       style: GoogleFonts.poppins(
         fontSize: 16,
         fontWeight: FontWeight.w400,

@@ -3,7 +3,7 @@ import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 import '../theme/app_spacing.dart';
 import '../widgets/gradient_button.dart';
-import 'login_page.dart';
+import '../routes/app_routes.dart';
 
 /// Landing Page KOMAH — Frame 1 Figma.
 class LandingPage extends StatelessWidget {
@@ -27,7 +27,7 @@ class LandingPage extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Image.asset(
-                        'assets/images/logo_komah.png',
+                        'assets/images/logo_komah_new.png',
                         width: 38,
                         height: 38,
                         fit: BoxFit.contain,
@@ -55,7 +55,7 @@ class LandingPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     // Brand text
-                    Text('KOMah', style: AppTextStyles.logoBrand),
+                    Text('KOMAH', style: AppTextStyles.logoBrand),
                   ],
                 ),
               ),
@@ -135,12 +135,7 @@ class LandingPage extends StatelessWidget {
                   text: 'Lanjutkan',
                   textStyle: AppTextStyles.buttonTextLanding,
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginPage(),
-                      ),
-                    );
+                    Navigator.pushNamed(context, AppRoutes.login);
                   },
                 ),
               ),
@@ -151,12 +146,7 @@ class LandingPage extends StatelessWidget {
               Center(
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginPage(),
-                      ),
-                    );
+                    Navigator.pushNamed(context, AppRoutes.login);
                   },
                   child: RichText(
                     text: TextSpan(

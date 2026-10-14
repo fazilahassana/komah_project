@@ -89,4 +89,63 @@ class AppTextStyles {
     height: 21 / 14,
     color: AppColors.accent,
   );
+
+    // ── KOMah Practical Challenge (Plus Jakarta Sans) ──
+
+  /// Judul layar, contoh "Mau pesan apa?"
+  static TextStyle screenTitle = GoogleFonts.plusJakartaSans(
+    fontWeight: FontWeight.w800,
+    fontSize: 24,
+    color: AppColors.textPrimary,
+  );
+
+  /// Subjudul layar
+  static TextStyle screenSubtitle = GoogleFonts.plusJakartaSans(
+    fontWeight: FontWeight.w400,
+    fontSize: 14,
+    height: 1.5,
+    color: AppColors.textSecondary,
+  );
+
+  /// Label field form, contoh "Lokasi Jemput"
+  static TextStyle fieldLabel = GoogleFonts.plusJakartaSans(
+    fontWeight: FontWeight.w600,
+    fontSize: 14,
+    color: AppColors.textPrimary,
+  );
+
+  /// Judul kartu / nama layanan
+  static TextStyle cardTitle = GoogleFonts.plusJakartaSans(
+    fontWeight: FontWeight.w700,
+    fontSize: 16,
+    color: AppColors.textPrimary,
+  );
+
+  /// Label kecil pada detail pesanan, contoh "Lokasi Jemput"
+  static TextStyle detailLabel = GoogleFonts.plusJakartaSans(
+    fontWeight: FontWeight.w400,
+    fontSize: 12,
+    color: AppColors.textSecondary,
+  );
+
+  /// Nilai detail pesanan, contoh "Kos FTI"
+  static TextStyle detailValue = GoogleFonts.plusJakartaSans(
+    fontWeight: FontWeight.w700,
+    fontSize: 15,
+    color: AppColors.textPrimary,
+  );
+
+  /// Teks tombol utama (Pesan Sekarang, Lanjutkan, Buat Pesanan)
+  static TextStyle buttonText = GoogleFonts.plusJakartaSans(
+    fontWeight: FontWeight.w700,
+    fontSize: 18,
+    color: AppColors.white,
+  );
+
+  /// Pesan error validasi di bawah field
+  static TextStyle errorText = GoogleFonts.plusJakartaSans(
+    fontWeight: FontWeight.w500,
+    fontSize: 12,
+    color: AppColors.error,
+  );
 }
