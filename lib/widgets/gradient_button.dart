@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 
-/// Tombol gradient reusable — digunakan pada Landing Page dan Login Page.
-/// Gradient dan shadow sesuai CSS Figma.
 class GradientButton extends StatelessWidget {
   const GradientButton({
     super.key,
     required this.text,
     required this.textStyle,
     required this.onPressed,
+    this.isLoading = false,
   });
 
   final String text;
   final TextStyle textStyle;
   final VoidCallback onPressed;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +35,20 @@ class GradientButton extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onPressed,
+          // Saat loading, tombol tidak bisa ditekan (cegah submit ganda)
+          onTap: isLoading ? null : onPressed,
           borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
           child: Center(
-            child: Text(text, style: textStyle),
+            child: isLoading
+                ? const SizedBox(
+                    width: 28,
+                    height: 28,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      color: AppColors.white,
+                    ),
+                  )
+                : Text(text, style: textStyle),
           ),
         ),
       ),

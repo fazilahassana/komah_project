@@ -3,8 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 
-/// Custom text field reusable — digunakan pada Login Page.
-/// Mendukung konfigurasi background, border, icon, dan obscureText.
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
     super.key,
@@ -17,6 +15,9 @@ class CustomTextField extends StatelessWidget {
     this.borderColor,
     this.keyboardType,
     this.validator,
+    this.enabled = true,
+    this.textInputAction,
+    this.onFieldSubmitted,
   });
 
   final TextEditingController controller;
@@ -28,13 +29,26 @@ class CustomTextField extends StatelessWidget {
   final Color? borderColor;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
+  final bool enabled;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onFieldSubmitted;
+
+  OutlineInputBorder _border(Color? color) => OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
+        borderSide: color != null
+            ? BorderSide(color: color, width: AppSpacing.inputBorderWidth)
+            : BorderSide.none,
+      );
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      enabled: enabled,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      onFieldSubmitted: onFieldSubmitted,
       validator: validator,
       style: GoogleFonts.poppins(
         fontSize: 16,
@@ -58,32 +72,12 @@ class CustomTextField extends StatelessWidget {
           horizontal: 16,
           vertical: 18,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
-          borderSide: borderColor != null
-              ? BorderSide(color: borderColor!, width: AppSpacing.inputBorderWidth)
-              : BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
-          borderSide: borderColor != null
-              ? BorderSide(color: borderColor!, width: AppSpacing.inputBorderWidth)
-              : BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
-          borderSide: borderColor != null
-              ? BorderSide(color: borderColor!, width: AppSpacing.inputBorderWidth)
-              : BorderSide.none,
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
+        border: _border(borderColor),
+        enabledBorder: _border(borderColor),
+        disabledBorder: _border(borderColor),
+        focusedBorder: _border(borderColor),
+        errorBorder: _border(Colors.red),
+        focusedErrorBorder: _border(Colors.red),
       ),
     );
   }
